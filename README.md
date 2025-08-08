@@ -14,11 +14,8 @@ O layout é inspirado em aplicações modernas como Notion e apps de notas, com 
 - ✅ **Framer Motion** – (em breve) para animações suaves.
 - ✅ **Vite** – Ferramenta de build para projetos modernos em React.
 
----
-
 ## 📁 Estrutura do Projeto
 
-```text
 src/
 ├── assets/         # Imagens e ícones
 ├── components/     # Componentes reutilizáveis (ex: Header, Footer)
