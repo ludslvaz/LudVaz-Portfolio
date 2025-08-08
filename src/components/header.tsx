@@ -49,7 +49,7 @@ export default function Navigation() {
   };
 
   return (
-    <div className="fixed bottom-1 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="backdrop-blur-2xl rounded-xl flex px-3 py-2 gap-x-4 border border-black/20 dark:border-white/10 duration-200 transition-all hover:gap-x-6">
         <Icon state={home}>
           <Home size={18} className="text-black/50 dark:text-white/60" />
