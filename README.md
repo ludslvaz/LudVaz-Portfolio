@@ -18,12 +18,13 @@ O layout é inspirado em aplicações modernas como Notion e apps de notas, com 
 
 ## 📁 Estrutura do Projeto
 
+```text
 src/
-├── assets/ # Imagens e ícones
-├── components/ # Componentes reutilizáveis (ex: Header, Footer)
-├── pages/ # Seções da landing page (Home, About, Projects, etc.)
-├── App.tsx # Componente principal
-└── main.tsx # Ponto de entrada do React
+├── assets/         # Imagens e ícones
+├── components/     # Componentes reutilizáveis (ex: Header, Footer)
+├── pages/          # Seções da landing page (Home, About, Projects, etc.)
+├── App.tsx         # Componente principal
+└── main.tsx        # Ponto de entrada do React
 
 ## 📌 Seções do Portfólio
 
