@@ -13,7 +13,7 @@ const items: ExperienceItem[] = [
     company: "Pustantaran Nepal",
     period: "Feb 2025 – May 2025",
     bullets: [
-      "Created functional full‑stack websites using MERN and Next.js.",
+      "Created functional full-stack websites using MERN and Next.js.",
       "Designed strategies converting user retention into paying customers.",
     ],
   },
@@ -34,7 +34,7 @@ const items: ExperienceItem[] = [
     period: "Feb 2022 – Apr 2023",
     bullets: [
       "Built accessible, responsive UIs with semantic HTML/CSS.",
-      "Aligned dev with marketing goals in cross‑functional squads.",
+      "Aligned dev with marketing goals in cross-functional squads.",
     ],
   },
 ];
@@ -79,39 +79,43 @@ export default function Experience() {
           freelancing. Some highlights:
         </motion.p>
 
-        {/* timeline */}
+        {/* timeline com ::before */}
         <div className="relative pl-10">
-          {/* trilho vertical (eixo fixo em 16px = left-4) */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-4 top-0 h-full w-px bg-violet-300/35"
-          />
-          {/* antena no topo, mesmo eixo do trilho */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-4 -top-3 h-3 w-px bg-violet-300/70"
-          />
-
-          <motion.ul
+          {/* OL é o TRILHO: cria a linha com ::before e a antena com ::after */}
+          <motion.ol
             variants={container}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            className="space-y-8 sm:space-y-10"
+            className="
+              relative space-y-8 sm:space-y-10
+
+              before:content-[''] before:absolute before:left-4 before:top-0
+              before:h-full before:w-px before:bg-gradient-to-b
+              before:from-violet-300/90 before:via-violet-400/90 before:to-violet-300/60
+              before:shadow-[0_0_10px_1px_rgba(167,139,250,0.35)]
+
+              after:content-[''] after:absolute after:left-4 after:-top-3
+              after:h-3 after:w-px after:bg-violet-300/80
+            "
           >
             {items.map((exp, idx) => (
-              <motion.li key={idx} variants={item} className="relative">
-                {/* marcador “pílula” centralizado no trilho:
-                    trilho em 16px -> marcador 12px (w-3) => left = 16 - 6 = 10px */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute left-[10px] top-1.5 h-3 w-3 rounded-full
-                             bg-violet-400 ring-4 ring-violet-400/25
-                             shadow-[0_0_18px_0] shadow-violet-500/40
-                             border border-white/50"
-                />
+              <motion.li
+                key={idx}
+                variants={item}
+                className="
+                  relative pl-8 md:pl-10
+
+                  /* bolinha no eixo do trilho: 16px (left-4) - metade do dot (6px) = 10px */
+                  before:content-[''] before:absolute before:left-[10px] before:top-1.5
+                  before:h-3 before:w-3 before:rounded-full before:bg-violet-400
+                  before:ring-4 before:ring-violet-400/25
+                  before:border before:border-white/70
+                  before:shadow-[0_0_18px_0_rgba(167,139,250,0.45)]
+                "
+              >
                 {/* conteúdo */}
-                <div className="ml-8 md:ml-10">
+                <div>
                   <div className="flex flex-wrap items-baseline gap-x-2 sm:gap-x-3 gap-y-1">
                     <h4 className="text-base md:text-lg font-semibold">{exp.role}</h4>
                     <span className="text-sm text-violet-400">{exp.company}</span>
@@ -129,7 +133,7 @@ export default function Experience() {
                 </div>
               </motion.li>
             ))}
-          </motion.ul>
+          </motion.ol>
         </div>
       </div>
     </section>
