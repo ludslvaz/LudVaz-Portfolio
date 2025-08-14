@@ -2,7 +2,7 @@ import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 export function Home() {
   return (
-    <section className="min-h-screen flex items-center justify-center px-4 text-foreground">
+    <section id="home" class="scroll-mt-24" className="min-h-screen flex items-center justify-center px-4 text-foreground">
       <div className="p-8 rounded-3xl shadow-lg text-center max-w-lg w-full transition-colors duration-500 bg-[var(--card)] text-[var(--card-foreground)]">
         <img
           src="/lud.svg"
