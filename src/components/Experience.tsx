@@ -56,7 +56,7 @@ const item = {
 export default function Experience() {
   return (
     <section id="experience" className="w-full px-5 sm:px-6 md:px-24 py-14 md:py-16">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* título + intro */}
         <motion.h3
           className="text-xl text-violet-400 font-medium mb-2"
@@ -80,7 +80,7 @@ export default function Experience() {
         </motion.p>
 
         {/* timeline com ::before */}
-        <div className="relative pl-10">
+        <div className="pl-2 relative">
           {/* OL é o TRILHO: cria a linha com ::before e a antena com ::after */}
           <motion.ol
             variants={container}
@@ -116,16 +116,14 @@ export default function Experience() {
               >
                 {/* conteúdo */}
                 <div>
-                  <div className="flex flex-wrap items-baseline gap-x-2 sm:gap-x-3 gap-y-1">
-                    <h4 className="text-base md:text-lg font-semibold">{exp.role}</h4>
-                    <span className="text-sm text-violet-400">{exp.company}</span>
-                  </div>
-                  <p className="text-xs md:text-sm text-muted-foreground mt-1">{exp.period}</p>
+                  <h4 className="font-semibold text-foreground mb-1">{exp.role}</h4>
+                  <span className="text-sm text-purple-600 dark:text-purple-300 font-light">{exp.company}</span>
+                  <p className="text-xs text-purple-600 dark:text-purple-300 font-light mt-1">({exp.period})</p>
 
                   <ul className="mt-3 space-y-2">
                     {exp.bullets.map((b, i) => (
-                      <li key={i} className="text-sm leading-relaxed text-foreground/90">
-                        <span className="mr-2 select-none text-foreground/40">–</span>
+                      <li key={i} className="text-sm leading-relaxed text-foreground font-light">
+                        <span className="mr-2 select-none text-foreground">–</span>
                         {b}
                       </li>
                     ))}

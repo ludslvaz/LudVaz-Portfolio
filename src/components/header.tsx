@@ -24,14 +24,12 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
   const [touchTip, setTouchTip] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
-  // limpa o timeout ao desmontar para evitar tooltip preso
   useEffect(() => {
     return () => {
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  // Mostra tooltip no toque (mobile) por ~900ms
   const flashTooltipOnTouch = () => {
     const noHover =
       typeof window !== "undefined" &&
@@ -47,7 +45,6 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
     "group relative flex items-center justify-center rounded-full transition-all duration-300 p-2 " +
     "hover:scale-105 hover:px-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40";
 
-  // Em "toggle", aplica bg ativo quando state=true. Em "ghost", nunca aplica bg ativo.
   const bgClass =
     variant === "toggle" && state
       ? "bg-black/10 dark:bg-white/10"
@@ -57,23 +54,21 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
     <button
       type="button"
       onClick={onClick}
-      onPointerDown={flashTooltipOnTouch}        // tooltip no toque (mobile)
-      onPointerLeave={() => setTouchTip(false)}  // garante que some ao sair
+      onPointerDown={flashTooltipOnTouch}
+      onPointerLeave={() => setTouchTip(false)}
       onPointerCancel={() => setTouchTip(false)}
       aria-label={label}
       aria-pressed={variant === "toggle" ? state : undefined}
       className={`${baseClass} ${bgClass}`}
-      // Evita parecer "selecionado" no botão de tema (ghost) por foco após clique com mouse/touch
       onPointerUp={(e) => {
         if (variant === "ghost" && e.pointerType !== "keyboard") {
           (e.currentTarget as HTMLButtonElement).blur();
         }
       }}
     >
-      {/* Ícone */}
       {children}
 
-      {/* Tooltip: hover no desktop; flash temporário no mobile (data-[show=true]) */}
+      {/* Tooltip: hover desktop + flash no mobile */}
       <span
         role="tooltip"
         data-show={touchTip ? "true" : "false"}
@@ -86,8 +81,6 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
           group-hover:opacity-100 group-hover:scale-100
           data-[show=true]:opacity-100 data-[show=true]:scale-100
           dark:bg-zinc-100 dark:text-zinc-900
-
-          /* ▼ setinha (quadrado rotacionado) */
           after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2
           after:top-full after:-mt-1 after:h-2 after:w-2 after:rotate-45
           after:bg-zinc-900 dark:after:bg-zinc-100
@@ -105,22 +98,23 @@ export default function Navigation() {
   const [folder, setFolder] = useState(false);
   const [gift, setGift] = useState(false);
   const [graduation, setGraduation] = useState(false);
+  const [contact, setContact] = useState(false); // novo: para destacar Contato
 
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
-  const setActive = (key: "home" | "folder" | "gift" | "graduation") => {
+  const setActive = (key: "home" | "folder" | "gift" | "graduation" | "contact") => {
     setHome(key === "home");
     setFolder(key === "folder");
     setGift(key === "gift");
     setGraduation(key === "graduation");
+    setContact(key === "contact");
   };
 
   // ===== Scroll suave para a seção =====
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -132,6 +126,49 @@ export default function Navigation() {
     });
   };
 
+  // ===== Scrollspy: atualiza ícone ativo conforme a seção visível =====
+  useEffect(() => {
+    const mapIdToKey: Record<string, "home" | "folder" | "gift" | "graduation" | "contact"> = {
+      home: "home",
+      projects: "folder",
+      experience: "gift",
+      education: "graduation",
+      contact: "contact",
+    };
+
+    const ids = Object.keys(mapIdToKey);
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+
+    if (els.length === 0) return;
+
+    // faixa central do viewport para decidir ativo
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // pega a seção com maior área visível
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+
+        const id = (visible.target as HTMLElement).id;
+        const key = mapIdToKey[id];
+        if (key) setActive(key);
+      },
+      {
+        root: null,
+        // ativa quando a seção cruza a faixa central (ex.: entre 45% e 55% do viewport)
+        rootMargin: "-45% 0px -55% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="fixed z-50 bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="backdrop-blur-2xl rounded-xl flex px-3 py-2 gap-x-4 border border-black/20 dark:border-white/10 duration-200 transition-all hover:gap-x-6">
@@ -140,7 +177,7 @@ export default function Navigation() {
           label="Início"
           onClick={() => {
             setActive("home");
-            scrollToSection("home");         // <section id="home">
+            scrollToSection("home");
           }}
         >
           <Home size={18} className="text-black/60 dark:text-white/70" />
@@ -153,7 +190,7 @@ export default function Navigation() {
           label="Projetos"
           onClick={() => {
             setActive("folder");
-            scrollToSection("projects");     // <section id="projects">
+            scrollToSection("projects");
           }}
         >
           <Folder size={18} strokeWidth={1.5} />
@@ -164,7 +201,7 @@ export default function Navigation() {
           label="Experiência"
           onClick={() => {
             setActive("gift");
-            scrollToSection("experience");   // <section id="experience">
+            scrollToSection("experience");
           }}
         >
           <Briefcase size={18} strokeWidth={1.5} />
@@ -175,17 +212,18 @@ export default function Navigation() {
           label="Formação"
           onClick={() => {
             setActive("graduation");
-            scrollToSection("education");    // <section id="education">
+            scrollToSection("education");
           }}
         >
           <GraduationCap size={18} strokeWidth={1.5} />
         </Icon>
 
         <Icon
+          state={contact}
           label="Contato"
           onClick={() => {
-            // não marca como "ativo" se você não quiser (ou crie um state separado)
-            scrollToSection("contact");      // <section id="contact">
+            setActive("contact");
+            scrollToSection("contact");
           }}
         >
           <Mail size={18} strokeWidth={1.5} />
