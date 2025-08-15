@@ -56,7 +56,7 @@ const item = {
 export default function Experience() {
   return (
     <section id="experience" className="w-full px-5 sm:px-6 md:px-24 py-14 md:py-16">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* título + intro */}
         <motion.h3
           className="text-xl text-violet-400 font-medium mb-2"
@@ -65,7 +65,7 @@ export default function Experience() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          Experience
+          Experience.
         </motion.h3>
 
         <motion.p

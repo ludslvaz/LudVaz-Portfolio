@@ -71,7 +71,7 @@ const projects = [
 export default function Projects() {
   return (
     <section id="projects" className="w-full px-6 md:px-24 pt-8 pb-16 text-foreground">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.h3
           className="text-xl text-violet-400 font-medium mb-1"
           initial={{ opacity: 0, y: 20 }}
@@ -79,7 +79,7 @@ export default function Projects() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          Projects.
+          Projetos.
         </motion.h3>
 
         <motion.p
