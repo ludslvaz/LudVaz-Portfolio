@@ -10,9 +10,14 @@ import tailwind from "../assets/tailwind.svg";
 import react from "../assets/react.svg";
 import central from "../assets/web.svg";
 
-type IconProps = { icon: string; label?: string; size?: "sm" | "lg" };
+type IconProps = {
+  icon: string;
+  label?: string;
+  size?: "sm" | "lg";
+  className?: string;              // <- ADICIONADO
+};
 
-function Icon({ icon, label = "tech", size = "sm" }: IconProps) {
+function Icon({ icon, label = "tech", size = "sm", className }: IconProps) {
   const wrap =
     size === "lg"
       ? "h-16 w-16 sm:h-[72px] sm:w-[72px]"
@@ -24,7 +29,7 @@ function Icon({ icon, label = "tech", size = "sm" }: IconProps) {
 
   return (
     <div
-      className={`rounded-full bg-white flex items-center justify-center shadow-md ${wrap}`}
+      className={`rounded-full bg-white flex items-center justify-center shadow-md ${wrap} ${className ?? ""}`}
       aria-label={label}
     >
       <img src={icon} alt={label} className={img} />
@@ -46,26 +51,14 @@ export default function Ecosystem() {
           <Icon icon={js} label="JavaScript" className="col-start-5" />
 
           {/* row 2 (centralizado: cols 2,3,4) */}
-          <div className="col-start-2 row-start-2">
-            <Icon icon={react} label="React" />
-          </div>
-          <div className="col-start-3 row-start-2">
-            <Icon icon={central} label="Web" size="lg" />
-          </div>
-          <div className="col-start-4 row-start-2">
-            <Icon icon={ts} label="TypeScript" />
-          </div>
+          <Icon icon={react} label="React" className="col-start-2 row-start-2" />
+          <Icon icon={central} label="Web" size="lg" className="col-start-3 row-start-2" />
+          <Icon icon={ts} label="TypeScript" className="col-start-4 row-start-2" />
 
           {/* row 3 (cols 2,3,4) */}
-          <div className="col-start-2 row-start-3">
-            <Icon icon={tailwind} label="Tailwind" />
-          </div>
-          <div className="col-start-3 row-start-3">
-            <Icon icon={css} label="CSS" />
-          </div>
-          <div className="col-start-4 row-start-3">
-            <Icon icon={node} label="Node.js" />
-          </div>
+          <Icon icon={tailwind} label="Tailwind" className="col-start-2 row-start-3" />
+          <Icon icon={css} label="CSS" className="col-start-3 row-start-3" />
+          <Icon icon={node} label="Node.js" className="col-start-4 row-start-3" />
         </div>
 
         {/* MOBILE: flex com quebras controladas */}
@@ -78,12 +71,14 @@ export default function Ecosystem() {
             <Icon icon={html} label="HTML" />
             <Icon icon={js} label="JavaScript" />
           </div>
+
           {/* Middle row */}
           <div className="flex items-center justify-center gap-8">
             <Icon icon={react} label="React" />
             <Icon icon={central} label="Web" size="lg" />
             <Icon icon={ts} label="TypeScript" />
           </div>
+
           {/* Bottom row */}
           <div className="flex flex-wrap justify-center gap-8">
             <Icon icon={tailwind} label="Tailwind" />
