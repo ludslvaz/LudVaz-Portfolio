@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { ExternalLink, Award } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -34,7 +35,7 @@ type CertificateItem = {
   preview?: string; // imagem grande do certificado (PNG/JPG)
 };
 
-/* ===== Dados (exemplos) ===== */
+/* ===== Dados ===== */
 const education: EducationItem[] = [
   {
     degree: "Bacharelado em Engenharia de Software",
@@ -61,9 +62,7 @@ const education: EducationItem[] = [
     degree: "Curso de Língua e Cultura Inglesa",
     school: "CEMIC - Centro Maranhense de Idiomas e Culturas ",
     period: "fevereiro 2018 – novembro 2021",
-    bullets: [
-      "Nível Intermediário",
-    ],
+    bullets: ["Nível Intermediário"],
   },
 ];
 
@@ -92,7 +91,7 @@ const certificates: CertificateItem[] = [
     logo: incode,
     preview: monitoria,
   },
-   {
+  {
     title: "Curso de Língua Inglesa",
     issuer: "Cemic",
     date: "2021",
@@ -119,17 +118,20 @@ const certificates: CertificateItem[] = [
 ];
 
 /* ===== Animações ===== */
-const container = {
+const easeSoft: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const container: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 },
+    transition: { duration: 0.5, ease: easeSoft, staggerChildren: 0.08 },
   },
 };
-const item = {
+
+const item: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeSoft } },
 };
 
 /* ===== Utils ===== */
@@ -147,17 +149,29 @@ function placeNearCursor(
   if (left + boxW + gap > vw) left = e.clientX - boxW - gap;
   if (top + boxH + gap > vh) top = e.clientY - boxH - gap;
 
-  // pequenos clamps finais
   left = Math.max(8, Math.min(left, vw - boxW - 8));
   top = Math.max(8, Math.min(top, vh - boxH - 8));
   return { left, top };
 }
 
 /* ===== Card de Certificado ===== */
+
+// extrai a posição do mouse, ou o centro do alvo quando for foco/teclado
+function getPointFromEvent(
+  e: React.MouseEvent | React.FocusEvent
+): { x: number; y: number } {
+  if ("clientX" in e && typeof e.clientX === "number") {
+    return { x: e.clientX, y: (e as React.MouseEvent).clientY };
+  }
+  const el = e.target as HTMLElement;
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+}
+
 function CertificateCard({
   cert,
-  onHoverMove,      // (cert, clientX, clientY)
-  onHoverEnd,       // ()
+  onHoverMove, // (cert, clientX, clientY)
+  onHoverEnd, // ()
 }: {
   cert: CertificateItem;
   onHoverMove: (c: CertificateItem, x: number, y: number) => void;
@@ -166,8 +180,8 @@ function CertificateCard({
   const touchTimer = useRef<number | null>(null);
 
   const handleEnterMove = (e: React.MouseEvent | React.FocusEvent) => {
-    const any = e as any;
-    onHoverMove(cert, any.clientX ?? 0, any.clientY ?? 0);
+    const { x, y } = getPointFromEvent(e);
+    onHoverMove(cert, x, y);
   };
 
   const handleTouch = (e: React.TouchEvent) => {
@@ -271,7 +285,7 @@ export default function Education() {
           Estudos formais e aprendizagem contínua por meio de certificados.
         </motion.p>
 
-        {/* ===== Timeline (igual Experience) ===== */}
+        {/* ===== Timeline ===== */}
         <div className="pl-2 relative">
           <motion.ol
             variants={container}
@@ -326,7 +340,7 @@ export default function Education() {
           </motion.ol>
         </div>
 
-        {/* ===== Certificados (sem coluna fixa) ===== */}
+        {/* ===== Certificados ===== */}
         <motion.h4
           className="text-base md:text-lg font-medium mt-12 mb-4 text-foreground"
           initial={{ opacity: 0, y: 16 }}

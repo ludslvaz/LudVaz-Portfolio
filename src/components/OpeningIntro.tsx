@@ -1,6 +1,7 @@
 // components/OpeningIntro.tsx
 import { AnimatePresence, motion } from "framer-motion";
-import { useLayoutEffect, useMemo, useState } from "react";
+import type { Variants } from "framer-motion";
+import { useLayoutEffect, useMemo, useState, type ReactElement } from "react";
 
 type OpeningIntroProps = {
   oncePerSession?: boolean;
@@ -56,7 +57,7 @@ export default function OpeningIntro({
   // ===== Variants =====
   const easeSoft: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-  const container = useMemo(
+  const container: Variants = useMemo(
     () => ({
       hidden: { opacity: 0 },
       show: {
@@ -70,10 +71,10 @@ export default function OpeningIntro({
       },
       exit: { opacity: 0, transition: { duration: 0.35 } },
     }),
-    []
+    [easeSoft]
   );
 
-  const fadeUpSoft = {
+  const fadeUpSoft: Variants = {
     hidden: { opacity: 0, y: 14, filter: "blur(6px)" },
     show: {
       opacity: 1,
@@ -83,7 +84,7 @@ export default function OpeningIntro({
     },
   };
 
-  const iconPop = {
+  const iconPop: Variants = {
     hidden: { opacity: 0, y: 12, scale: 0.96, filter: "blur(4px)" },
     show: {
       opacity: 1,
@@ -94,7 +95,7 @@ export default function OpeningIntro({
     },
   };
 
-  const bgGlow = {
+  const bgGlow: Variants = {
     hidden: { opacity: 0, scale: 1.02 },
     show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease: easeSoft } },
   };
@@ -102,7 +103,6 @@ export default function OpeningIntro({
   if (!visible) return null;
 
   return (
-    // IMPORTANTE: não use initial={false} aqui
     <AnimatePresence>
       {visible && (
         <motion.div
@@ -129,7 +129,7 @@ export default function OpeningIntro({
           {/* Conteúdo central */}
           <div className="relative grid h-full place-items-center px-4">
             <motion.div className="w-full max-w-5xl" variants={container}>
-              {/* 1) Trio de ícones (participam do stagger) */}
+              {/* 1) Trio de ícones */}
               <motion.div
                 className="mb-10 flex items-center justify-center gap-4 sm:gap-6"
                 variants={fadeUpSoft}
@@ -214,14 +214,14 @@ function IconBox({
   ariaLabel,
   variants,
 }: {
-  children: (props: { className?: string }) => JSX.Element;
+  children: (props: { className?: string }) => ReactElement;
   ariaLabel: string;
-  variants?: any;
+  variants?: Variants;
 }) {
   const Icon = children;
   return (
     <motion.div
-      variants={variants} // <- agora herda o stagger/initial/animate do container
+      variants={variants}
       className="grid h-[58px] w-[58px] place-items-center rounded-2xl border border-white/15 bg-white/5
                  shadow-[0_6px_24px_rgba(0,0,0,.35)] ring-1 ring-white/5
                  transition duration-300 will-change-transform

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 /** ---- Tipos ---- */
 type Bullet =
@@ -58,18 +59,21 @@ const items: ExperienceItem[] = [
   },
 ];
 
-/** ---- Animações ---- */
-const container = {
+/** ---- Animações (tipadas) ---- */
+const easeSoft: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const container: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 },
+    transition: { duration: 0.5, ease: easeSoft, staggerChildren: 0.08 },
   },
 };
-const item = {
+
+const item: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeSoft } },
 };
 
 /** ---- Componente ---- */
@@ -98,7 +102,8 @@ export default function Experience() {
           transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
         >
-          Comecei minha jornada na tecnologia em 2021, desde então, sigo em aprimoramento contínuo e hoje estou me especializando em back-end.
+          Comecei minha jornada na tecnologia em 2021, desde então, sigo em
+          aprimoramento contínuo e hoje estou me especializando em back-end.
         </motion.p>
 
         {/* timeline com ::before */}
@@ -153,7 +158,9 @@ export default function Experience() {
                             key={i}
                             className="text-sm leading-relaxed text-foreground font-light"
                           >
-                            <span className="mr-2 select-none text-purple-600 dark:text-purple-300">–</span>
+                            <span className="mr-2 select-none text-purple-600 dark:text-purple-300">
+                              –
+                            </span>
                             <span className="whitespace-pre-line">{b}</span>
                           </li>
                         );
@@ -168,7 +175,9 @@ export default function Experience() {
                                 key={j}
                                 className="flex gap-2 text-foreground/90 font-light"
                               >
-                                <span className="select-none text-lg text-purple-600 dark:text-purple-300">•</span>
+                                <span className="select-none text-lg text-purple-600 dark:text-purple-300">
+                                  •
+                                </span>
                                 <span className="whitespace-pre-line">{s}</span>
                               </li>
                             ))}
