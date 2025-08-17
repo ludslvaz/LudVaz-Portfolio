@@ -2,6 +2,21 @@ import { motion } from "framer-motion";
 import { ExternalLink, Award } from "lucide-react";
 import { useRef, useState } from "react";
 
+// logos
+import alura from "../assets/logos_cert/alura.svg";
+import iema from "../assets/logos_cert/iema.svg";
+import incode from "../assets/logos_cert/incode (1).svg";
+import inovaMA from "../assets/logos_cert/inovaMA.svg";
+import ingles from "../assets/logos_cert/ingles (1).svg";
+
+// Imgs Certificados
+import Trilhas from "../assets/certificados/Trilhas.svg";
+import monitoria from "../assets/certificados/InCode.svg";
+import Ingles from "../assets/certificados/Ingles.svg";
+import Tecnico from "../assets/certificados/Tecnico.svg";
+import react from "../assets/certificados/react.svg";
+import typeScript from "../assets/certificados/TypeScript.svg";
+
 /* ===== Tipos ===== */
 type EducationItem = {
   degree: string;
@@ -22,57 +37,84 @@ type CertificateItem = {
 /* ===== Dados (exemplos) ===== */
 const education: EducationItem[] = [
   {
-    degree: "B.Sc. in Software Engineering",
-    school: "UNDB",
-    period: "2023 – present",
+    degree: "Bacharelado em Engenharia de Software",
+    school: "UNDB - Unidade de Ensino Superior Dom Bosco",
+    period: "fevereiro 2024 – junho 2028",
     bullets: [
-      "Focus on web development, algorithms and databases.",
-      "Research projects and team-based labs.",
+      "Foco em desenvolvimento web, algoritmo e banco de dados.",
+      "Estrutura de dados, linguagens de porgramção e design de sistemas.",
+      "Projetos de pesquisa e laborátorios em equipe.",
     ],
   },
   {
-    degree: "Front-end Bootcamp",
+    degree: "Curso Técnico de Informática para Internet",
     school: "Incode Tech School",
-    period: "2022 – 2023",
+    period: "janeiro 2021 - dezembro 2023",
     bullets: [
-      "React, TypeScript, Node.js and UI/UX fundamentals.",
-      "Projects with agile practices and code reviews.",
+      `HTML5, CSS3, JavaScript, Python, MySQL, Git/GitHub, 
+      Introdução a rede de computadores,
+      Fundamentos de segurança da informação, Design UX/UI (Figma).`,
+      "Projetos com práticas ágeis e revisões de código.",
+    ],
+  },
+  {
+    degree: "Curso de Língua e Cultura Inglesa",
+    school: "CEMIC - Centro Maranhense de Idiomas e Culturas ",
+    period: "fevereiro 2018 – novembro 2021",
+    bullets: [
+      "Nível Intermediário",
     ],
   },
 ];
 
 const certificates: CertificateItem[] = [
   {
-    title: "React + TypeScript",
-    issuer: "Incode Tech School",
-    date: "2023",
-    url: "https://example.com/cert/react-ts",
-    logo: "/assets/certs/reactts-logo.svg",
-    preview: "/assets/certs/reactts-preview.jpg",
+    title: "Programa Trilhas Inova",
+    issuer: "Governo do Maranhão - SECTI-MA",
+    date: "2024",
+    url: "https://www.linkedin.com/in/ludmilla-vaz-93b226217/details/certifications/1725579176858/single-media-viewer/?profileId=ACoAADasF78B040jSpfIA6aBW9knc0QNxNce_Ng",
+    logo: inovaMA,
+    preview: Trilhas,
   },
   {
-    title: "CSS Layouts & Animations",
-    issuer: "Alura",
+    title: "Técnico de Informática p/Internet",
+    issuer: "IEMA",
     date: "2023",
     url: "https://example.com/cert/css",
-    logo: "/assets/certs/css-logo.svg",
-    preview: "/assets/certs/css-preview.jpg",
+    logo: iema,
+    preview: Tecnico,
   },
   {
-    title: "UI/UX Fundamentals",
-    issuer: "Coursera",
+    title: "Monitoria Front-End",
+    issuer: "InCode - Tech School",
     date: "2024",
-    url: "https://example.com/cert/uiux",
-    logo: "/assets/certs/uiux-logo.svg",
-    preview: "/assets/certs/uiux-preview.jpg",
+    url: "https://www.linkedin.com/in/ludmilla-vaz-93b226217/details/certifications/1711122477286/single-media-viewer/?profileId=ACoAADasF78B040jSpfIA6aBW9knc0QNxNce_Ng",
+    logo: incode,
+    preview: monitoria,
+  },
+   {
+    title: "Curso de Língua Inglesa",
+    issuer: "Cemic",
+    date: "2021",
+    url: "https://www.linkedin.com/in/ludmilla-vaz-93b226217/details/certifications/1709572881514/single-media-viewer/?profileId=ACoAADasF78B040jSpfIA6aBW9knc0QNxNce_Ng",
+    logo: ingles,
+    preview: Ingles,
   },
   {
-    title: "SQL & Databases",
-    issuer: "DataCamp",
+    title: "TypeScript",
+    issuer: "Alura",
     date: "2024",
-    url: "https://example.com/cert/sql",
-    logo: "/assets/certs/sql-logo.svg",
-    preview: "/assets/certs/sql-preview.jpg",
+    url: "https://www.linkedin.com/in/ludmilla-vaz-93b226217/details/certifications/1725578199703/single-media-viewer/?profileId=ACoAADasF78B040jSpfIA6aBW9knc0QNxNce_Ng",
+    logo: alura,
+    preview: typeScript,
+  },
+  {
+    title: "React",
+    issuer: "Alura",
+    date: "2024",
+    url: "https://www.linkedin.com/in/ludmilla-vaz-93b226217/details/certifications/1725578524934/single-media-viewer/?profileId=ACoAADasF78B040jSpfIA6aBW9knc0QNxNce_Ng",
+    logo: alura,
+    preview: react,
   },
 ];
 
@@ -155,7 +197,7 @@ function CertificateCard({
         "
       >
         {cert.logo ? (
-          <img src={cert.logo} alt="" className="h-5 w-5 object-contain" />
+          <img src={cert.logo} alt="" className="block w-full h-full object-cover" />
         ) : (
           <Award size={16} className="opacity-80" />
         )}
@@ -182,7 +224,7 @@ function CertificateCard({
             <ExternalLink size={14} className="shrink-0 opacity-70 group-hover:opacity-100" />
           )}
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-xs text-muted-foreground font-light mt-0.5">
           {cert.issuer} • {cert.date}
         </p>
       </a>
@@ -216,7 +258,7 @@ export default function Education() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          Education.
+          Educação.
         </motion.h3>
 
         <motion.p
@@ -226,7 +268,7 @@ export default function Education() {
           transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
         >
-          Formal studies and continuous learning through certificates.
+          Estudos formais e aprendizagem contínua por meio de certificados.
         </motion.p>
 
         {/* ===== Timeline (igual Experience) ===== */}
@@ -292,7 +334,7 @@ export default function Education() {
           transition={{ duration: 0.45 }}
           viewport={{ once: true }}
         >
-          Certificates
+          Certificados
         </motion.h4>
 
         <motion.div

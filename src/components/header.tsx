@@ -14,10 +14,10 @@ type IconVariant = "toggle" | "ghost";
 
 type IconProps = {
   children: React.ReactNode;
-  state?: boolean;         // usado apenas quando variant="toggle"
+  state?: boolean;
   label: string;
   onClick?: () => void;
-  variant?: IconVariant;   // "toggle" (padrão) | "ghost"
+  variant?: IconVariant;
 };
 
 const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: IconProps) => {
@@ -25,16 +25,13 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    };
+    return () => { if (timeoutRef.current) window.clearTimeout(timeoutRef.current); };
   }, []);
 
   const flashTooltipOnTouch = () => {
     const noHover =
       typeof window !== "undefined" &&
       (window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches);
-
     if (!noHover) return;
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     setTouchTip(true);
@@ -68,7 +65,6 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
     >
       {children}
 
-      {/* Tooltip: hover desktop + flash no mobile */}
       <span
         role="tooltip"
         data-show={touchTip ? "true" : "false"}
@@ -76,15 +72,13 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
           pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 z-10
           whitespace-nowrap rounded-md bg-zinc-900 text-white text-[12px] font-normal leading-none
           px-2 py-1 opacity-0 scale-95
-          shadow-lg/50 shadow-black/30
-          transition duration-150
+          shadow-lg/50 shadow-black/30 transition duration-150
           group-hover:opacity-100 group-hover:scale-100
           data-[show=true]:opacity-100 data-[show=true]:scale-100
           dark:bg-zinc-100 dark:text-zinc-900
           after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2
           after:top-full after:-mt-1 after:h-2 after:w-2 after:rotate-45
-          after:bg-zinc-900 dark:after:bg-zinc-100
-          after:shadow-[0_1px_4px_rgba(0,0,0,0.25)]
+          after:bg-zinc-900 dark:after:bg-zinc-100 after:shadow-[0_1px_4px_rgba(0,0,0,0.25)]
         "
       >
         {label}
@@ -98,7 +92,7 @@ export default function Navigation() {
   const [folder, setFolder] = useState(false);
   const [gift, setGift] = useState(false);
   const [graduation, setGraduation] = useState(false);
-  const [contact, setContact] = useState(false); // novo: para destacar Contato
+  const [contact, setContact] = useState(false);
 
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
@@ -111,22 +105,43 @@ export default function Navigation() {
     setContact(key === "contact");
   };
 
-  // ===== Scroll suave para a seção =====
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    el.scrollIntoView({
-      behavior: prefersReduced ? "auto" : "smooth",
-      block: "start",
-      inline: "nearest",
-    });
+    el.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start", inline: "nearest" });
   };
 
-  // ===== Scrollspy: atualiza ícone ativo conforme a seção visível =====
+  // Abre o compose do Gmail com tudo preenchido.
+  // Se o popup for bloqueado, faz fallback para mailto:
+  const openEmail = () => {
+    const to = "ludvazdev@gmail.com";
+    const subject = "Quero trabalhar com você";
+    const body = `Olá Ludmilla,
+
+  Vi seu portfólio e gostaria de conversar sobre um projeto/oportunidade.
+  Podemos falar?
+
+  Obrigado(a),
+  <Seu nome>`;
+
+  const gmailURL =
+    `https://mail.google.com/mail/?view=cm&fs=1&tf=1` +
+    `&to=${encodeURIComponent(to)}` +
+    `&su=${encodeURIComponent(subject)}` +
+    `&body=${encodeURIComponent(body)}`;
+
+  const win = window.open(gmailURL, "_blank", "noopener,noreferrer");
+  if (!win) {
+    // fallback se o navegador bloquear popup
+    window.location.href =
+      `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+};
+
+
   useEffect(() => {
     const mapIdToKey: Record<string, "home" | "folder" | "gift" | "graduation" | "contact"> = {
       home: "home",
@@ -135,36 +150,19 @@ export default function Navigation() {
       education: "graduation",
       contact: "contact",
     };
-
     const ids = Object.keys(mapIdToKey);
-    const els = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
-
+    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
     if (els.length === 0) return;
-
-    // faixa central do viewport para decidir ativo
     const observer = new IntersectionObserver(
       (entries) => {
-        // pega a seção com maior área visível
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (!visible) return;
-
         const id = (visible.target as HTMLElement).id;
         const key = mapIdToKey[id];
         if (key) setActive(key);
       },
-      {
-        root: null,
-        // ativa quando a seção cruza a faixa central (ex.: entre 45% e 55% do viewport)
-        rootMargin: "-45% 0px -55% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-      }
+      { root: null, rootMargin: "-45% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
     );
-
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
@@ -172,71 +170,32 @@ export default function Navigation() {
   return (
     <div className="fixed z-50 bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="backdrop-blur-2xl rounded-xl flex px-3 py-2 gap-x-4 border border-black/20 dark:border-white/10 duration-200 transition-all hover:gap-x-6">
-        <Icon
-          state={home}
-          label="Início"
-          onClick={() => {
-            setActive("home");
-            scrollToSection("home");
-          }}
-        >
+        <Icon state={home} label="Início" onClick={() => { setActive("home"); scrollToSection("home"); }}>
           <Home size={18} className="text-black/60 dark:text-white/70" />
         </Icon>
 
         <div className="w-[0.08rem] bg-black/15 dark:bg-white/15" />
 
-        <Icon
-          state={folder}
-          label="Projetos"
-          onClick={() => {
-            setActive("folder");
-            scrollToSection("projects");
-          }}
-        >
+        <Icon state={folder} label="Projetos" onClick={() => { setActive("folder"); scrollToSection("projects"); }}>
           <Folder size={18} strokeWidth={1.5} />
         </Icon>
 
-        <Icon
-          state={gift}
-          label="Experiência"
-          onClick={() => {
-            setActive("gift");
-            scrollToSection("experience");
-          }}
-        >
+        <Icon state={gift} label="Experiência" onClick={() => { setActive("gift"); scrollToSection("experience"); }}>
           <Briefcase size={18} strokeWidth={1.5} />
         </Icon>
 
-        <Icon
-          state={graduation}
-          label="Formação"
-          onClick={() => {
-            setActive("graduation");
-            scrollToSection("education");
-          }}
-        >
+        <Icon state={graduation} label="Formação" onClick={() => { setActive("graduation"); scrollToSection("education"); }}>
           <GraduationCap size={18} strokeWidth={1.5} />
         </Icon>
 
-        <Icon
-          state={contact}
-          label="Contato"
-          onClick={() => {
-            setActive("contact");
-            scrollToSection("contact");
-          }}
-        >
+        {/* E-mail: abre compose; não “seleciona” (ghost) */}
+        <Icon variant="ghost" label="E-mail" onClick={openEmail}>
           <Mail size={18} strokeWidth={1.5} />
         </Icon>
 
         <div className="w-[0.08rem] bg-black/15 dark:bg-white/15" />
 
-        {/* Botão de tema como GHOST: nunca “seleciona”, só hover/press */}
-        <Icon
-          variant="ghost"
-          label={theme === "dark" ? "Modo claro" : "Modo escuro"}
-          onClick={toggleTheme}
-        >
+        <Icon variant="ghost" label={theme === "dark" ? "Modo claro" : "Modo escuro"} onClick={toggleTheme}>
           {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </Icon>
       </div>
