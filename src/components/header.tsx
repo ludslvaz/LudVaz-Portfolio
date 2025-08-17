@@ -1,3 +1,4 @@
+// src/components/header.tsx
 import {
   Briefcase,
   Folder,
@@ -7,7 +8,7 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "../components/theme-provider";
 
 type IconVariant = "toggle" | "ghost";
@@ -20,18 +21,28 @@ type IconProps = {
   variant?: IconVariant;
 };
 
-const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: IconProps) => {
+const Icon = ({
+  children,
+  state = false,
+  label,
+  onClick,
+  variant = "toggle",
+}: IconProps) => {
   const [touchTip, setTouchTip] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    return () => { if (timeoutRef.current) window.clearTimeout(timeoutRef.current); };
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    };
   }, []);
 
+  // mostra o tooltip em dispositivos sem hover (touch/coarse)
   const flashTooltipOnTouch = () => {
     const noHover =
       typeof window !== "undefined" &&
-      (window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches);
+      (window.matchMedia("(hover: none)").matches ||
+        window.matchMedia("(pointer: coarse)").matches);
     if (!noHover) return;
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     setTouchTip(true);
@@ -58,7 +69,8 @@ const Icon = ({ children, state = false, label, onClick, variant = "toggle" }: I
       aria-pressed={variant === "toggle" ? state : undefined}
       className={`${baseClass} ${bgClass}`}
       onPointerUp={(e) => {
-        if (variant === "ghost" && e.pointerType !== "keyboard") {
+        // Em "ghost", tira o foco após clique com mouse/pen (não em touch)
+        if (variant === "ghost" && (e.pointerType === "mouse" || e.pointerType === "pen")) {
           (e.currentTarget as HTMLButtonElement).blur();
         }
       }}
@@ -92,17 +104,17 @@ export default function Navigation() {
   const [folder, setFolder] = useState(false);
   const [gift, setGift] = useState(false);
   const [graduation, setGraduation] = useState(false);
-  const [contact, setContact] = useState(false);
 
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
-  const setActive = (key: "home" | "folder" | "gift" | "graduation" | "contact") => {
+  const setActive = (
+    key: "home" | "folder" | "gift" | "graduation"
+  ) => {
     setHome(key === "home");
     setFolder(key === "folder");
     setGift(key === "gift");
     setGraduation(key === "graduation");
-    setContact(key === "contact");
   };
 
   const scrollToSection = (id: string) => {
@@ -111,51 +123,58 @@ export default function Navigation() {
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start", inline: "nearest" });
+    el.scrollIntoView({
+      behavior: prefersReduced ? "auto" : "smooth",
+      block: "start",
+      inline: "nearest",
+    });
   };
 
-  // Abre o compose do Gmail com tudo preenchido.
-  // Se o popup for bloqueado, faz fallback para mailto:
+  // Abre o compose do Gmail; se bloquear popup, cai no mailto:
   const openEmail = () => {
     const to = "ludvazdev@gmail.com";
     const subject = "Quero trabalhar com você";
     const body = `Olá Ludmilla,
 
-  Vi seu portfólio e gostaria de conversar sobre um projeto/oportunidade.
-  Podemos falar?
+Vi seu portfólio e gostaria de conversar sobre um projeto/oportunidade.
+Podemos falar?
 
-  Obrigado(a),
-  <Seu nome>`;
+Obrigado(a),
+<Seu nome>`;
 
-  const gmailURL =
-    `https://mail.google.com/mail/?view=cm&fs=1&tf=1` +
-    `&to=${encodeURIComponent(to)}` +
-    `&su=${encodeURIComponent(subject)}` +
-    `&body=${encodeURIComponent(body)}`;
+    const gmailURL =
+      `https://mail.google.com/mail/?view=cm&fs=1&tf=1` +
+      `&to=${encodeURIComponent(to)}` +
+      `&su=${encodeURIComponent(subject)}` +
+      `&body=${encodeURIComponent(body)}`;
 
-  const win = window.open(gmailURL, "_blank", "noopener,noreferrer");
-  if (!win) {
-    // fallback se o navegador bloquear popup
-    window.location.href =
-      `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-};
-
+    const win = window.open(gmailURL, "_blank", "noopener,noreferrer");
+    if (!win) {
+      window.location.href =
+        `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+  };
 
   useEffect(() => {
-    const mapIdToKey: Record<string, "home" | "folder" | "gift" | "graduation" | "contact"> = {
+    const mapIdToKey: Record<string, "home" | "folder" | "gift" | "graduation"> = {
       home: "home",
       projects: "folder",
       experience: "gift",
       education: "graduation",
-      contact: "contact",
     };
+
     const ids = Object.keys(mapIdToKey);
-    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+
     if (els.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (!visible) return;
         const id = (visible.target as HTMLElement).id;
         const key = mapIdToKey[id];
@@ -163,6 +182,7 @@ export default function Navigation() {
       },
       { root: null, rootMargin: "-45% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
     );
+
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
