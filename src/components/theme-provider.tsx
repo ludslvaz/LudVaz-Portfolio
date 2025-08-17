@@ -1,73 +1,103 @@
-import { createContext, useContext, useEffect, useState } from "react"
+/* eslint-disable react-refresh/only-export-components */
+// components/theme-provider.tsx
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 
-type Theme = "dark" | "light" | "system"
+type Theme = "dark" | "light" | "system";
 
 type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-}
+  children: ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+};
 
 type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+};
+
+const ThemeContext = createContext<ThemeProviderState | undefined>(undefined);
+
+/** Lê o tema salvo sem quebrar SSR */
+function readStoredTheme(key: string): Theme | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return (window.localStorage.getItem(key) as Theme | null) ?? null;
+  } catch {
+    return null;
+  }
 }
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-}
+/** Aplica classe no <html> */
+function applyThemeClass(theme: Theme) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  root.classList.remove("light", "dark");
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
+  if (theme === "system") {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.classList.add(prefersDark ? "dark" : "light");
+  } else {
+    root.classList.add(theme);
+  }
+}
 
 export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
-  ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  // inicia sem tocar no localStorage durante SSR
+  const [theme, setThemeState] = useState<Theme>(
+    () => readStoredTheme(storageKey) || defaultTheme
+  );
 
+  // aplica classes sempre que o tema muda
   useEffect(() => {
-    const root = window.document.documentElement
+    applyThemeClass(theme);
+  }, [theme]);
 
-    root.classList.remove("light", "dark")
+  // quando o tema for "system", reagir a troca do SO
+  useEffect(() => {
+    if (theme !== "system") return;
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light"
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mql) return;
 
-      root.classList.add(systemTheme)
-      return
-    }
+    const handler = () => applyThemeClass("system");
+    mql.addEventListener?.("change", handler);
+    return () => mql.removeEventListener?.("change", handler);
+  }, [theme]);
 
-    root.classList.add(theme)
-  }, [theme])
-
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
-      setTheme(theme)
+  // memorizado para satisfazer exhaustive-deps
+  const setTheme = useCallback(
+    (next: Theme) => {
+      try {
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(storageKey, next);
+        }
+      } catch {
+        /* ignore */
+      }
+      setThemeState(next);
     },
-  }
+    [storageKey]
+  );
 
-  return (
-    <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
-    </ThemeProviderContext.Provider>
-  )
+  const value = useMemo<ThemeProviderState>(() => ({ theme, setTheme }), [theme, setTheme]);
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
-export const useTheme = () => {
-  const context = useContext(ThemeProviderContext)
-
-  if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider")
-
-  return context
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used within a ThemeProvider");
+  return ctx;
 }
