@@ -1,3 +1,4 @@
+import OpeningIntro from "./components/OpeningIntro";
 import Navigation from "./components/header";
 import { Home } from "./components/home";
 import { ThemeProvider } from "./components/theme-provider"
@@ -10,12 +11,14 @@ function App() {
   return (
     <div>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Home />
-      <Services />
-      <Projects />
-      <Experience />
-      <Education />
-      <Navigation />
+        <OpeningIntro accent="violet" oncePerSession={false} />
+        
+        <Home />
+        <Services />
+        <Projects />
+        <Experience />
+        <Education />
+        <Navigation />
       </ThemeProvider>
     </div>
   );

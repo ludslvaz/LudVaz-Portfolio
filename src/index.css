@@ -141,3 +141,33 @@
     background-size: 20px 20px;
   }
 }
+/* Cursor que pisca ao final do texto digitado */
+.typing-caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1em;
+  margin-left: 2px;
+  background-color: rgba(255,255,255,0.9);
+  vertical-align: -0.1em;
+  animation: caretBlink 1s steps(1,end) infinite;
+}
+@keyframes caretBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Ruído sutil (opcional) */
+.noise-layer { position: relative; }
+.noise-layer::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 0 0.35'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+  opacity: 1;
+  animation: noiseShift 1.8s steps(2,end) infinite;
+}
+@keyframes noiseShift {
+  0% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-2%,1%,0); }
+  100% { transform: translate3d(0,0,0); }
+}
