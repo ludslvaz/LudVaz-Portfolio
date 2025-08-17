@@ -249,7 +249,7 @@ export default function Education() {
 
   return (
     <section id="education" className="w-full px-5 sm:px-6 md:px-24 py-14 md:py-16 scroll-mt-28">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto pb-28">
         {/* título + intro */}
         <motion.h3
           className="text-xl text-violet-400 font-medium mb-2"
