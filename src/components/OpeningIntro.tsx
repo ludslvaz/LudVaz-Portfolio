@@ -3,12 +3,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { useLayoutEffect, useMemo, useState, type ReactElement } from "react";
 
+/* ================== Constantes estáveis (fora do componente) ================== */
+const EASE_SOFT: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 type OpeningIntroProps = {
   oncePerSession?: boolean;
   onFinish?: () => void;
-  headlineTop?: string;          // "Welcome To My"
-  headlineBottom?: string;       // "Portfolio Website"
-  linkText?: string;             // "www.seudominio.com"
+  headlineTop?: string;     // "Welcome To My"
+  headlineBottom?: string;  // "Portfolio Website"
+  linkText?: string;        // "www.seudominio.com"
 };
 
 export default function OpeningIntro({
@@ -26,7 +29,11 @@ export default function OpeningIntro({
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { setVisible(false); return; }
+
+    if (reduce) {
+      setVisible(false);
+      return;
+    }
 
     if (oncePerSession && typeof window !== "undefined") {
       if (sessionStorage.getItem("intro_done") === "1") {
@@ -41,22 +48,20 @@ export default function OpeningIntro({
     onFinish?.();
   };
 
-  // typewriter do link
+  // -------- typewriter do link
   const [typed, setTyped] = useState("");
   useLayoutEffect(() => {
     if (!visible) return;
     let i = 0;
-    const id = setInterval(() => {
+    const id = window.setInterval(() => {
       setTyped(linkText.slice(0, i));
       i++;
-      if (i > linkText.length) clearInterval(id);
+      if (i > linkText.length) window.clearInterval(id);
     }, 100);
-    return () => clearInterval(id);
+    return () => window.clearInterval(id);
   }, [visible, linkText]);
 
-  // ===== Variants =====
-  const easeSoft: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
+  // ------------------- Variants -------------------
   const container: Variants = useMemo(
     () => ({
       hidden: { opacity: 0 },
@@ -64,14 +69,14 @@ export default function OpeningIntro({
         opacity: 1,
         transition: {
           duration: 0.6,
-          ease: easeSoft,
+          ease: EASE_SOFT,
           when: "beforeChildren",
-          staggerChildren: 0.14, // controla o "ir aparecendo"
+          staggerChildren: 0.14, // controla o “ir aparecendo”
         },
       },
       exit: { opacity: 0, transition: { duration: 0.35 } },
     }),
-    [easeSoft]
+    []
   );
 
   const fadeUpSoft: Variants = {
@@ -80,7 +85,7 @@ export default function OpeningIntro({
       opacity: 1,
       y: 0,
       filter: "blur(0px)",
-      transition: { duration: 0.9, ease: easeSoft },
+      transition: { duration: 0.9, ease: EASE_SOFT },
     },
   };
 
@@ -91,13 +96,13 @@ export default function OpeningIntro({
       y: 0,
       scale: 1,
       filter: "blur(0px)",
-      transition: { duration: 0.8, ease: easeSoft },
+      transition: { duration: 0.8, ease: EASE_SOFT },
     },
   };
 
   const bgGlow: Variants = {
     hidden: { opacity: 0, scale: 1.02 },
-    show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease: easeSoft } },
+    show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease: EASE_SOFT } },
   };
 
   if (!visible) return null;
@@ -134,9 +139,15 @@ export default function OpeningIntro({
                 className="mb-10 flex items-center justify-center gap-4 sm:gap-6"
                 variants={fadeUpSoft}
               >
-                <IconBox ariaLabel="Code" variants={iconPop}>{CodeIcon}</IconBox>
-                <IconBox ariaLabel="User" variants={iconPop}>{UserIcon}</IconBox>
-                <IconBox ariaLabel="GitHub" variants={iconPop}>{GitHubIcon}</IconBox>
+                <IconBox ariaLabel="Code" variants={iconPop}>
+                  {CodeIcon}
+                </IconBox>
+                <IconBox ariaLabel="User" variants={iconPop}>
+                  {UserIcon}
+                </IconBox>
+                <IconBox ariaLabel="GitHub" variants={iconPop}>
+                  {GitHubIcon}
+                </IconBox>
               </motion.div>
 
               {/* 2) Título em duas linhas */}
@@ -189,13 +200,13 @@ export default function OpeningIntro({
             aria-hidden
             initial={{ clipPath: "circle(0% at 50% 50%)" }}
             animate={{ clipPath: "circle(140% at 50% 50%)" }}
-            transition={{ delay: 2.0, duration: 1.5, ease: easeSoft }}
+            transition={{ delay: 2.0, duration: 1.5, ease: EASE_SOFT }}
             onAnimationComplete={close}
             className="absolute inset-0 bg-transparent"
             style={{ willChange: "clip-path" }}
           />
 
-          {/* pular intro */}
+          {/* pular intro (topo) */}
           <button
             onClick={close}
             className="absolute top-6 right-6 rounded-full border border-white/15 bg-purple-400/20 px-3 py-1.5 text-xs text-purple-600 dark:text-purple-300 font-light hover:bg-white/10 transition"
@@ -242,7 +253,7 @@ function IconBox({
 
 /* SVGs (sem dependências externas) */
 const CodeIcon = (props: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} {...props}>
     <path d="m8 16-4-4 4-4" />
     <path d="m16 8 4 4-4 4" />
     <path d="m14 4-4 16" />
@@ -250,7 +261,7 @@ const CodeIcon = (props: { className?: string }) => (
 );
 
 const UserIcon = (props: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} {...props}>
     <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Z" />
     <path d="M20 21a8 8 0 1 0-16 0" />
   </svg>
