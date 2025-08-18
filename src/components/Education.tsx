@@ -14,7 +14,7 @@ import ingles from "../assets/logos_cert/ingles (1).svg";
 import Trilhas from "../assets/certificados/Trilhas.svg";
 import monitoria from "../assets/certificados/InCode.svg";
 import Ingles from "../assets/certificados/Ingles.svg";
-import Tecnico from "../assets/certificados/Tecnico.svg";
+import Tecnico from "../assets/certificados/Tecnico (2).svg";
 import react from "../assets/certificados/react.svg";
 import typeScript from "../assets/certificados/TypeScript.svg";
 
