@@ -133,7 +133,7 @@ export default function Navigation() {
   // Abre o compose do Gmail; se bloquear popup, cai no mailto:
   const openEmail = () => {
     const to = "ludvazdev@gmail.com";
-    const subject = "Quero trabalhar com você";
+    const subject = "Olá! Vim pelo portfólio";
     const body = `Olá Ludmilla,
 
 Vi seu portfólio e gostaria de conversar sobre um projeto/oportunidade.
